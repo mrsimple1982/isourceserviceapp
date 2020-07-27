@@ -1,0 +1,42 @@
+{
+  "name": "Parent",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "dateOfBirth",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "parentMobileNumber",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "parentEmail",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "approvalStatus",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "studentId",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [],
+  "changelogDate": "20200727152207",
+  "entityTableName": "parent",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": ["isourceschooladmingatewayapp", "isourceparentsconnectgatewayapp", "isourceserviceapp"],
+  "microserviceName": "isourceserviceapp"
+}
