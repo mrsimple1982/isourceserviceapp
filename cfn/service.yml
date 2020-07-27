@@ -1,0 +1,61 @@
+Resources:
+  CloudWatchLogsGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: 'isourceserviceappLogGroup'
+      RetentionInDays: 1
+  Service:
+    Type: 'AWS::ECS::Service'
+    Properties:
+      Cluster: ADCluster
+      DesiredCount: 1
+      TaskDefinition: !Ref TaskDefinition
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+            - sg-0d2aa787707175ef5
+          Subnets:
+            - subnet-0c7e58da9f2a8d443
+            - subnet-0b790c581a9bc34b8
+      LoadBalancers:
+        - ContainerName: isourceserviceapp
+          ContainerPort: 8082
+          TargetGroupArn: arn:aws:elasticloadbalancing:us-east-2:659418003263:targetgroup/adtg/23b8370dc8dc9caf
+  TaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    Properties:
+      Family: isourceserviceapp
+      Cpu: 256
+      Memory: 512
+      NetworkMode: awsvpc
+      ExecutionRoleArn: arn:aws:iam::659418003263:role/ecsTaskExecutionRole
+      RequiresCompatibilities:
+        - FARGATE
+      ContainerDefinitions:
+        - Name: isourceserviceapp
+          Image: '659418003263.dkr.ecr.us-east-2.amazonaws.com/isourceserviceapp:latest'
+          Memory: 512
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: 'isourceserviceappLogGroup'
+              awslogs-region: us-east-2
+              awslogs-stream-prefix: 'isourceserviceapp-api'
+          HealthCheck:
+              Interval: 300
+              Timeout: 60
+              StartPeriod: 300
+              Command: ["ls"]
+          Environment:
+            - Name: SPRING_PROFILES_ACTIVE
+              Value: prod,swagger,fargate
+            - Name: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
+              Value: 'http://admin:admin@10.0.1.16:8761/eureka'
+            - Name: SPRING_CLOUD_CONFIG_URI
+              Value: 'http://admin:admin@10.0.1.16:8761/config'
+            - Name: SPRING_DATASOURCE_URL
+              Value: jdbc:mysql://10.0.1.16:3306/isourceserviceapp?useUnicode=true&characterEncoding=utf8&useSSL=false&createDatabaseIfNotExist=true
+          PortMappings:
+            - ContainerPort: 8082

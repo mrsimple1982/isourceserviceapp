@@ -1,0 +1,20 @@
+version: 0.2
+phases:
+  pre_build:
+    run-as: root
+    commands:
+      - $(aws ecr get-login --region us-east-2 --no-include-email)
+  build:
+    run-as: root
+    commands:
+      - chmod 700 mvnw
+      - ./mvnw package -Pprod verify jib:dockerBuild
+      - docker image tag isourceserviceapp "659418003263.dkr.ecr.us-east-2.amazonaws.com/isourceserviceapp:latest"
+  post_build:
+    run-as: root
+    commands:
+      - docker push "659418003263.dkr.ecr.us-east-2.amazonaws.com/isourceserviceapp:latest"
+artifacts:
+  files:
+    - cfn/service.yml
+  discard-paths: true
